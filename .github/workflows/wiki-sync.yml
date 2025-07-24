@@ -13,13 +13,13 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
-      - name: Sync to Wiki
-        uses: ./
+
+      - name: GitHub Wiki Sync Actions
+        uses: kawamataryo/github-wiki-sync-actions@v0.0.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           sync-folder: 'docs'
