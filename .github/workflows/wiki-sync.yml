@@ -1,6 +1,7 @@
 name: Sync Wiki
 
 on:
+  gollum:
   push:
     branches:
       - main

@@ -22,6 +22,7 @@ Synchronize your repository documentation folder with GitHub Wiki bidirectionall
 name: Sync Wiki
 
 on:
+  gollum:
   push:
     branches:
       - main
