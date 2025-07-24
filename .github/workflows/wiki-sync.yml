@@ -1,0 +1,26 @@
+name: Sync Wiki
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Sync to Wiki
+        uses: ./
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          sync-folder: 'docs'
+          conflict-strategy: 'repo-wins'

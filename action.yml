@@ -1,0 +1,29 @@
+name: 'GitHub Wiki Sync'
+description: 'Synchronize your repository documentation folder with GitHub Wiki bidirectionally. Keep your docs in sync effortlessly!'
+author: 'kawamataryo'
+branding:
+  icon: 'refresh-cw'
+  color: 'blue'
+
+inputs:
+  token:
+    description: 'GitHub token with repo and wiki access'
+    required: true
+  sync-folder:
+    description: 'Folder path to synchronize with wiki'
+    required: false
+    default: 'docs'
+  conflict-strategy:
+    description: 'Strategy for handling conflicts (repo-wins, wiki-wins, manual, skip)'
+    required: false
+    default: 'repo-wins'
+
+outputs:
+  changes-count:
+    description: 'Number of changes applied'
+  sync-status:
+    description: 'Overall sync status (success, partial, failed)'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
