@@ -1,4 +1,4 @@
-name: 'GitHub Wiki Sync'
+name: 'GitHub Wiki Sync Actions'
 description: 'Synchronize your repository documentation folder with GitHub Wiki bidirectionally. Keep your docs in sync effortlessly!'
 author: 'kawamataryo'
 branding:
