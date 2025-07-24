@@ -50,6 +50,6 @@ export async function run(): Promise<void> {
 }
 
 // アクションの実行（モジュールが直接実行された場合のみ）
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (require.main === module) {
   run()
 }

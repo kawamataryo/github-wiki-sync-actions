@@ -1,10 +1,46 @@
-import * as fs from 'node:fs/promises';
-import * as os from 'node:os';
-import * as path from 'node:path';
-import * as core from '@actions/core';
-import { CircuitBreaker, ErrorHandler } from './error-handler';
-import { PartialFailureHandler, TransactionManager } from './transaction-manager';
-export class SyncEngine {
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.SyncEngine = void 0;
+const fs = __importStar(require("node:fs/promises"));
+const os = __importStar(require("node:os"));
+const path = __importStar(require("node:path"));
+const core = __importStar(require("@actions/core"));
+const error_handler_1 = require("./error-handler");
+const transaction_manager_1 = require("./transaction-manager");
+class SyncEngine {
     github;
     fileHandler;
     config;
@@ -15,8 +51,8 @@ export class SyncEngine {
         this.github = githubClient;
         this.fileHandler = fileHandler;
         this.config = config;
-        this.transactionManager = new TransactionManager(githubClient, fileHandler);
-        this.circuitBreaker = new CircuitBreaker();
+        this.transactionManager = new transaction_manager_1.TransactionManager(githubClient, fileHandler);
+        this.circuitBreaker = new error_handler_1.CircuitBreaker();
     }
     async sync() {
         const result = {
@@ -32,7 +68,7 @@ export class SyncEngine {
             transactionId = await this.transactionManager.beginTransaction();
             // 一時ディレクトリにWikiをクローン
             this.wikiPath = path.join(os.tmpdir(), `wiki-sync-${Date.now()}`);
-            await ErrorHandler.retryWithBackoff(async () => {
+            await error_handler_1.ErrorHandler.retryWithBackoff(async () => {
                 if (!this.wikiPath)
                     throw new Error('Wiki path not initialized');
                 await this.github.cloneWiki(this.wikiPath);
@@ -46,7 +82,7 @@ export class SyncEngine {
             const changes = await this.detectChanges();
             core.info(`Detected ${changes.length} changes`);
             // 部分的失敗ハンドラー
-            const failureHandler = new PartialFailureHandler();
+            const failureHandler = new transaction_manager_1.PartialFailureHandler();
             // 変更を適用
             for (const change of changes) {
                 try {
@@ -69,8 +105,8 @@ export class SyncEngine {
                     core.info(`Applied change: ${change.type} ${change.filePath || change.wikiName}`);
                 }
                 catch (error) {
-                    ErrorHandler.logError(error, 'Apply change');
-                    const errorContext = ErrorHandler.classify(error);
+                    error_handler_1.ErrorHandler.logError(error, 'Apply change');
+                    const errorContext = error_handler_1.ErrorHandler.classify(error);
                     result.errors.push({
                         change,
                         error: errorContext.message,
@@ -92,7 +128,7 @@ export class SyncEngine {
             }
             // Wikiの変更をコミット＆プッシュ
             if (result.changesApplied > 0) {
-                await ErrorHandler.retryWithBackoff(async () => {
+                await error_handler_1.ErrorHandler.retryWithBackoff(async () => {
                     if (!this.wikiPath)
                         throw new Error('Wiki path not initialized');
                     await this.github.commitWikiChanges(this.wikiPath, `Sync from repository: ${result.changesApplied} changes`);
@@ -105,7 +141,7 @@ export class SyncEngine {
             result.summary = `Synchronization completed: ${result.changesApplied} changes applied, ${result.errors.length} errors`;
         }
         catch (error) {
-            ErrorHandler.logError(error, 'Sync operation');
+            error_handler_1.ErrorHandler.logError(error, 'Sync operation');
             result.success = false;
             result.errors.push({
                 phase: 'sync',
@@ -321,4 +357,5 @@ export class SyncEngine {
         }));
     }
 }
+exports.SyncEngine = SyncEngine;
 //# sourceMappingURL=sync-engine.js.map
