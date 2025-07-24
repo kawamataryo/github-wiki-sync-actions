@@ -39,8 +39,7 @@ jobs:
         uses: actions/checkout@v4
       
       - name: Sync to Wiki
-        uses: your-username/wiki-sync@v1
-        with:
+          uses: kawamataryo/github-wiki-sync-actions@v0.0.1        with:
           token: ${{ secrets.GITHUB_TOKEN }}
           sync-folder: 'docs'
           conflict-strategy: 'repo-wins'
