@@ -147,6 +147,10 @@ class GitHubClient {
     // Wiki操作
     async cloneWiki(localPath) {
         await this.git.clone(this.config.wikiRepo, localPath);
+        // クローン後のリポジトリでGit設定を行う
+        const clonedGit = (0, simple_git_1.default)(localPath);
+        await clonedGit.addConfig('user.name', 'github-actions[bot]');
+        await clonedGit.addConfig('user.email', '41898282+github-actions[bot]@users.noreply.github.com');
         return localPath;
     }
     async getWikiPages(wikiPath) {
@@ -168,6 +172,9 @@ class GitHubClient {
     }
     async commitWikiChanges(wikiPath, message) {
         const git = (0, simple_git_1.default)(wikiPath);
+        // Git作者情報を設定（GitHub Actionsで必要）
+        await git.addConfig('user.name', 'github-actions[bot]');
+        await git.addConfig('user.email', '41898282+github-actions[bot]@users.noreply.github.com');
         await git.add('.');
         await git.commit(message);
     }
