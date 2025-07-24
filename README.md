@@ -33,16 +33,17 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+
       - name: Sync to Wiki
-          uses: kawamataryo/github-wiki-sync-actions@v0.0.1        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          sync-folder: 'docs'
-          conflict-strategy: 'repo-wins'
+          uses: kawamataryo/github-wiki-sync-actions@v0.0.3
+          with:
+            token: ${{ secrets.GITHUB_TOKEN }}
+            sync-folder: 'docs'
+            conflict-strategy: 'repo-wins'
 ```
 
 ## Inputs
@@ -93,7 +94,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    
+
     steps:
       - uses: actions/checkout@v4
       - uses: your-username/wiki-sync@v1
