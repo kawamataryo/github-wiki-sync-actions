@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: GitHub Wiki Sync Actions
-        uses: kawamataryo/github-wiki-sync-actions@v0.0.1
+        uses: kawamataryo/github-wiki-sync-actions
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           sync-folder: 'docs'
